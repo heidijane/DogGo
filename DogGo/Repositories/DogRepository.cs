@@ -46,10 +46,20 @@ namespace DogGo.Repositories
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                             OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
-                            Breed = reader.GetString(reader.GetOrdinal("Breed")),
-                            Notes = reader.GetString(reader.GetOrdinal("Notes")),
-                            ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl"))
+                            Breed = reader.GetString(reader.GetOrdinal("Breed"))
                         };
+
+                        //only set these properties if they are not null
+                        string dogNotes = Utilities.SafeGetString(reader, "Notes");
+                        string dogImage = Utilities.SafeGetString(reader, "ImageUrl");
+                        if (dogNotes != null)
+                        {
+                            dog.Notes = dogNotes;
+                        }
+                        if (dogImage != null)
+                        {
+                            dog.ImageUrl = dogImage;
+                        }
 
                         dogs.Add(dog);
                     }
@@ -85,10 +95,21 @@ namespace DogGo.Repositories
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                             OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
-                            Breed = reader.GetString(reader.GetOrdinal("Breed")),
-                            Notes = reader.GetString(reader.GetOrdinal("Notes")),
-                            ImageUrl = reader.GetString(reader.GetOrdinal("ImageUrl"))
+                            Breed = reader.GetString(reader.GetOrdinal("Breed"))
                         };
+
+                        //only set these properties if they are not null
+                        string dogNotes = Utilities.SafeGetString(reader, "Notes");
+                        string dogImage = Utilities.SafeGetString(reader, "ImageUrl");
+                        if (dogNotes != null)
+                        {
+                            dog.Notes = dogNotes;
+                        }
+                        if (dogImage != null)
+                        {
+                            dog.ImageUrl = dogImage;
+                        }
+
 
                         reader.Close();
                         return dog;
@@ -102,7 +123,7 @@ namespace DogGo.Repositories
             }
         }
 
-        public List<Dog> GetDogsByOwnerId(int ownerId)
+        public List<Dog> GetDogsByOwnerId(int dogId)
         {
             using (SqlConnection conn = Connection)
             {
@@ -112,10 +133,10 @@ namespace DogGo.Repositories
                     cmd.CommandText = @"
                         SELECT Id, [Name], OwnerId, Breed, Notes, ImageUrl
                         FROM Dog
-                        WHERE OwnerId = @ownerId
+                        WHERE OwnerId = @dogId
                     ";
 
-                    cmd.Parameters.AddWithValue("@ownerId", ownerId);
+                    cmd.Parameters.AddWithValue("@dogId", dogId);
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
@@ -152,5 +173,119 @@ namespace DogGo.Repositories
                 }
             }
         }
+
+        public void AddDog(Dog dog)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                    INSERT INTO Dog ([Name], OwnerId, Breed, Notes, ImageUrl)
+                    OUTPUT INSERTED.ID
+                    VALUES (@name, @ownerId, @breed, @notes, @imageUrl);
+                ";
+
+                    cmd.Parameters.AddWithValue("@name", dog.Name);
+                    cmd.Parameters.AddWithValue("@ownerId", dog.OwnerId);
+                    cmd.Parameters.AddWithValue("@breed", dog.Breed);
+
+                    // Deal with possibly null values
+                    if (dog.Notes == null)
+                    {
+                        cmd.Parameters.AddWithValue("@notes", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@notes", dog.Notes);
+                    }
+
+                    if (dog.ImageUrl == null)
+                    {
+                        cmd.Parameters.AddWithValue("@imageUrl", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@imageUrl", dog.ImageUrl);
+                    }
+
+
+                    int id = (int)cmd.ExecuteScalar();
+
+                    dog.Id = id;
+                }
+            }
+        }
+
+        public void UpdateDog(Dog dog)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            UPDATE Dog
+                            SET 
+                                [Name] = @name, 
+                                OwnerId = @ownerId, 
+                                Breed = @breed, 
+                                Notes = @notes, 
+                                ImageUrl = @imageUrl
+                            WHERE Id = @id";
+
+                    
+                    cmd.Parameters.AddWithValue("@name", dog.Name);
+                    cmd.Parameters.AddWithValue("@ownerId", dog.OwnerId);
+                    cmd.Parameters.AddWithValue("@breed", dog.Breed);
+                    cmd.Parameters.AddWithValue("@id", dog.Id);
+
+                    // Deal with possibly null values
+                    if (dog.Notes == null)
+                    {
+                        cmd.Parameters.AddWithValue("@notes", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@notes", dog.Notes);
+                    }
+
+                    if (dog.ImageUrl == null)
+                    {
+                        cmd.Parameters.AddWithValue("@imageUrl", DBNull.Value);
+                    }
+                    else
+                    {
+                        cmd.Parameters.AddWithValue("@imageUrl", dog.ImageUrl);
+                    }
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void DeleteDog(int dogId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            DELETE FROM Dog
+                            WHERE Id = @id
+                        ";
+
+                    cmd.Parameters.AddWithValue("@id", dogId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+
     }
 }
