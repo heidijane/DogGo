@@ -73,13 +73,13 @@ namespace DogGo.Controllers
             }
         }
 
-        // GET: OwnersController/Edit/5
+        // GET: OwnersController/Edit
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: OwnersController/Edit/5
+        // POST: OwnersController/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -94,24 +94,27 @@ namespace DogGo.Controllers
             }
         }
 
-        // GET: OwnersController/Delete/5
+        // GET: OwnersController/Delete
         public ActionResult Delete(int id)
         {
-            return View();
+            Owner owner = _ownerRepo.GetOwnerById(id);
+
+            return View(owner);
         }
 
-        // POST: OwnersController/Delete/5
+        // POST: OwnersController/Delete
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Owner owner)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                _ownerRepo.DeleteOwner(id);
+                return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return View(owner);
             }
         }
     }
