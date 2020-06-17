@@ -32,8 +32,9 @@ namespace DogGo.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT Id, Email, [Name], Address, NeighborhoodId, Phone
+                        SELECT Owner.Id, Owner.Email, Owner.[Name], Owner.Address, Owner.NeighborhoodId, Owner.Phone, Neighborhood.[Name] AS NeighborhoodName
                         FROM Owner
+                        JOIN Neighborhood ON Neighborhood.Id = Owner.NeighborhoodId
                     ";
 
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -50,6 +51,14 @@ namespace DogGo.Repositories
                             NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
                             Phone = reader.GetString(reader.GetOrdinal("Phone"))
                         };
+
+                        Neighborhood neighborhood = new Neighborhood()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
+                            Name = reader.GetString(reader.GetOrdinal("NeighborhoodName"))
+                        };
+
+                        owner.Neighborhood = neighborhood;
 
                         owners.Add(owner);
                     }
@@ -69,9 +78,10 @@ namespace DogGo.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT Id, Email, [Name], Address, NeighborhoodId, Phone
+                        SELECT Owner.Id, Owner.Email, Owner.[Name], Owner.Address, Owner.NeighborhoodId, Owner.Phone, Neighborhood.[Name] AS NeighborhoodName
                         FROM Owner
-                        WHERE Id = @id
+                        JOIN Neighborhood ON Neighborhood.Id = Owner.NeighborhoodId
+                        WHERE Owner.Id = @id
                     ";
 
                     cmd.Parameters.AddWithValue("@id", id);
@@ -89,6 +99,14 @@ namespace DogGo.Repositories
                             NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
                             Phone = reader.GetString(reader.GetOrdinal("Phone"))
                         };
+
+                        Neighborhood neighborhood = new Neighborhood()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
+                            Name = reader.GetString(reader.GetOrdinal("NeighborhoodName"))
+                        };
+
+                        owner.Neighborhood = neighborhood;
 
                         reader.Close();
                         return owner;
