@@ -128,6 +128,36 @@ namespace DogGo.Repositories
             }
         }
 
+        public void UpdateOwner(Owner owner)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            UPDATE Owner
+                            SET 
+                                [Name] = @name, 
+                                Email = @email, 
+                                Address = @address, 
+                                Phone = @phone, 
+                                NeighborhoodId = @neighborhoodId
+                            WHERE Id = @id";
+
+                    cmd.Parameters.AddWithValue("@name", owner.Name);
+                    cmd.Parameters.AddWithValue("@email", owner.Email);
+                    cmd.Parameters.AddWithValue("@address", owner.Address);
+                    cmd.Parameters.AddWithValue("@phone", owner.Phone);
+                    cmd.Parameters.AddWithValue("@neighborhoodId", owner.NeighborhoodId);
+                    cmd.Parameters.AddWithValue("@id", owner.Id);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         public void DeleteOwner(int ownerId)
         {
             using (SqlConnection conn = Connection)
