@@ -46,20 +46,10 @@ namespace DogGo.Repositories
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                             OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
-                            Breed = reader.GetString(reader.GetOrdinal("Breed"))
+                            Breed = reader.GetString(reader.GetOrdinal("Breed")),
+                            Notes = ReaderUtils.GetNullableString(reader, "Notes"),
+                            ImageUrl = ReaderUtils.GetNullableString(reader, "ImageUrl")
                         };
-
-                        //only set these properties if they are not null
-                        string dogNotes = Utilities.SafeGetString(reader, "Notes");
-                        string dogImage = Utilities.SafeGetString(reader, "ImageUrl");
-                        if (dogNotes != null)
-                        {
-                            dog.Notes = dogNotes;
-                        }
-                        if (dogImage != null)
-                        {
-                            dog.ImageUrl = dogImage;
-                        }
 
                         dogs.Add(dog);
                     }
@@ -95,21 +85,10 @@ namespace DogGo.Repositories
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                             OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
-                            Breed = reader.GetString(reader.GetOrdinal("Breed"))
+                            Breed = reader.GetString(reader.GetOrdinal("Breed")),
+                            Notes = ReaderUtils.GetNullableString(reader, "Notes"),
+                            ImageUrl = ReaderUtils.GetNullableString(reader, "ImageUrl")
                         };
-
-                        //only set these properties if they are not null
-                        string dogNotes = Utilities.SafeGetString(reader, "Notes");
-                        string dogImage = Utilities.SafeGetString(reader, "ImageUrl");
-                        if (dogNotes != null)
-                        {
-                            dog.Notes = dogNotes;
-                        }
-                        if (dogImage != null)
-                        {
-                            dog.ImageUrl = dogImage;
-                        }
-
 
                         reader.Close();
                         return dog;
@@ -150,19 +129,9 @@ namespace DogGo.Repositories
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                             OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
                             Breed = reader.GetString(reader.GetOrdinal("Breed")),
+                            Notes = ReaderUtils.GetNullableString(reader, "Notes"),
+                            ImageUrl = ReaderUtils.GetNullableString(reader, "ImageUrl")
                         };
-
-                        //only set these properties if they are not null
-                        string dogNotes = Utilities.SafeGetString(reader, "Notes");
-                        string dogImage = Utilities.SafeGetString(reader, "ImageUrl");
-                        if (dogNotes != null)
-                        {
-                            dog.Notes = dogNotes;
-                        }
-                        if (dogImage != null)
-                        {
-                            dog.ImageUrl = dogImage;
-                        }
 
                         dogs.Add(dog);
                     }
