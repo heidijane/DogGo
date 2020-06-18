@@ -36,9 +36,11 @@ namespace DogGo.Repositories
                                                Walks.DogId,
                                                Dog.Name,
                                                Dog.OwnerId,
-                                               Dog.Breed
+                                               Dog.Breed,
+                                               Owner.Name AS OwnerName
                                         FROM Walks 
-                                        JOIN Dog on Dog.Id = Walks.DogId
+                                        JOIN Dog ON Dog.Id = Walks.DogId
+                                        JOIN Owner ON Dog.OwnerId = Owner.Id
                                         WHERE Walks.WalkerId = @walkerId";
 
                     cmd.Parameters.AddWithValue("@walkerId", walkerId);
@@ -64,7 +66,15 @@ namespace DogGo.Repositories
                             OwnerId = reader.GetInt32(reader.GetOrdinal("OwnerId")),
                             Breed = reader.GetString(reader.GetOrdinal("Breed"))
                         };
+
                         walk.Dog = dog;
+
+                        Owner owner = new Owner()
+                        {
+                            Id = reader.GetInt32(reader.GetOrdinal("OwnerId")),
+                            Name = reader.GetString(reader.GetOrdinal("OwnerName"))
+                        };
+                        walk.Owner = owner;
 
                         walks.Add(walk);
                     }
