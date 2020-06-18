@@ -53,7 +53,7 @@
                         <tr>
                             <td>@walk.Date</td>
                             <td>@walk.Owner.Name</td>
-                            <td>@walk.Duration</td>
+                            <td>@DogGo.Utilities.TimeUtils.SecondsToHoursAndMinutes(walk.Duration)</td>
                         </tr>
                     }
                 </tbody>
@@ -61,7 +61,7 @@
         </section>
 
         <section class="col-lg-4 col-md-8 container mt-5">
-            <h1>Total Walk Time: @Model.TotalWalkTime</h1>               
+            <h1>Total Walk Time: @DogGo.Utilities.TimeUtils.SecondsToHoursAndMinutes(Model.TotalWalkTime)</h1>               
         </section>
     </div>
 </div>
