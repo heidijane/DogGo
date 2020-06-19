@@ -58,6 +58,7 @@ namespace DogGo.Controllers
         }
 
         // POST: Owners/Create
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Dog dog)
@@ -77,11 +78,12 @@ namespace DogGo.Controllers
         }
 
         // GET: OwnersController/Edit
+        [Authorize]
         public ActionResult Edit(int id)
         {
             Dog dog = _dogRepo.GetDogById(id);
 
-            if (dog == null)
+            if (dog == null || dog.OwnerId != GetCurrentUserId())
             {
                 return NotFound();
             }
@@ -90,6 +92,7 @@ namespace DogGo.Controllers
         }
 
         // POST: OwnersController/Edit
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, Dog dog)
@@ -107,14 +110,21 @@ namespace DogGo.Controllers
         }
 
         // GET: DogController/Delete
+        [Authorize]
         public ActionResult Delete(int id)
         {
             Dog dog = _dogRepo.GetDogById(id);
+
+            if (dog == null || dog.OwnerId != GetCurrentUserId())
+            {
+                return NotFound();
+            }
 
             return View(dog);
         }
 
         // POST: DogController/Delete
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, Dog dog)
